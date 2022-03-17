@@ -6,8 +6,8 @@
 std::vector<sf::CircleShape> create_gear(float radius, float x, float y);
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(800, 800), "SFML window");
-    
+    sf::RenderWindow window(sf::VideoMode(1900, 1000), "SFML window");
+    window.setFramerateLimit(60);
     sf::RenderTexture offscreen;
     offscreen.create(800, 800);
     std::vector<sf::CircleShape> Gears = create_gear(375, 400, 400);
@@ -15,10 +15,16 @@ int main() {
     for (gIter = Gears.begin(); gIter != Gears.end(); ++gIter) { //for loop to draw each platform object
         offscreen.draw(*gIter);
     }
-    sf::Texture TEMP;
-    TEMP.update(offscreen);
-    std::cout << "Test";
-    sf::Sprite Gear(TEMP);
+    offscreen.display();
+    sf::Sprite gear1(offscreen.getTexture());
+    sf::Sprite gear2(offscreen.getTexture());
+    gear1.scale(.5, .5);
+    gear1.setOrigin(400, 400);
+    gear1.move(500, 500);
+    gear2.scale(.5, .5);
+    gear2.setOrigin(400, 400);
+    gear2.move(880, 500);
+    gear2.rotate(-30 * (3.14159265358979323 / 18));
     while (window.isOpen())
     {
         // Process events
@@ -30,9 +36,11 @@ int main() {
                 window.close();
         }
         // Clear screen
-        window.clear(sf::Color::Black);
-        window.draw(Gear);
-        offscreen.display();
+        window.clear();
+        gear1.rotate((3.14159265358979323 / 18));
+        gear2.rotate(-(3.14159265358979323 / 18));
+        window.draw(gear2);
+        window.draw(gear1);
         // Update the window
         window.display();
     }
