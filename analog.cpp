@@ -30,26 +30,26 @@ int main() {
     //create LINES-----------------------------------------------------------------------------------------------------------------------------------------
     sf::Vertex gear2gear[] =
     {
-        sf::Vertex(sf::Vector2f(0, 0), sf::Color::Blue),
-        sf::Vertex(sf::Vector2f(0, 0), sf::Color::Blue)
+        sf::Vertex(sf::Vector2f(750, 500), sf::Color::Blue),
+        sf::Vertex(sf::Vector2f(1150, 500), sf::Color::Blue)
     };
     //LINE VARIABLES---------------------------------------------------------------------------------------------------------------------------------------
     float lineX = 0;
     float lineY = 0;
-    float lineAngle0 = 0;
-    float lineAngle1 = 0;
+    float lineAngle = -0.00304617419787;
     //GEAR VARIABLES---------------------------------------------------------------------------------------------------------------------------------------
     float gearX = 950;
     float gearY = 500;
     float scale = .5;
     float radius = 375 * scale;
+    float g1radius = 375 * .5;
     float g2Teeth = teeth(radius);
     float rotationSpeed = (PI / 18);
     //MOVE GEARS to starting postitions--------------------------------------------------------------------------------------------------------------------
     gear1.setScale(scale, scale);
     gear1.setOrigin(400, 400);
     gear2.setOrigin(400, 400);
-    gear1.move(gearX - radius, gearY);
+    gear1.setPosition(gearX - g1radius, gearY);
     gear2.rotate(-28 * (PI / 18));
     while (window.isOpen())
     {
@@ -63,7 +63,7 @@ int main() {
         }
         //UPDATE section-----------------------------------------------------------------------------------------------------------------------------------
         //GEAR UPDATE--------------------------------------------------------------------------------------------------------------------------------------
-        scale += .001;
+        scale;
         radius = 375 * scale;
         g2Teeth = teeth(radius);
         gear1.rotate(rotationSpeed/(36/g2Teeth));
@@ -71,9 +71,11 @@ int main() {
         gear2.setPosition(gearX + radius + ((radius * 2) / 40), gearY);
         gear2.setScale(scale, scale);
         //LINE UPDATE--------------------------------------------------------------------------------------------------------------------------------------
-
-        gear2gear[0].position = sf::Vector2f(10, 0);
-        gear2gear[1].position = sf::Vector2f(10, 0);
+        //add point rotation for gear 2, use its Y value to draw dots on gear 1.
+        lineX = (150) * cos(lineAngle);
+        lineY = (150) * sin(lineAngle);
+        gear2gear[0].position = sf::Vector2f(gearX - g1radius, lineY + 500);
+        gear2gear[1].position = sf::Vector2f(lineX + (gearX + radius + ((radius * 2) / 40)), lineY + 500);
         //DOT UPDATE---------------------------------------------------------------------------------------------------------------------------------------
         //RENDER section-----------------------------------------------------------------------------------------------------------------------------------
         window.clear();
@@ -82,6 +84,7 @@ int main() {
         window.draw(gear2gear, 2, sf::LinesStrip);
         // Update the window-------------------------------------------------------------------------------------------------------------------------------
         window.display();
+        lineAngle += -0.00304617419787;
     }
 
 }
