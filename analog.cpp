@@ -32,6 +32,21 @@ int main() {
     sf::Sprite gear2(offscreen.getTexture());
     sf::Texture dots(renderDots.getTexture());
     sf::Sprite drawing(dots);
+    //GEAR VARIABLES---------------------------------------------------------------------------------------------------------------------------------------
+    float gearX = 950;
+    float gearY = 500;
+    float scale = .5;
+    float radius = 375 * scale;
+    float g1radius = 375 * .5;
+    float g2Teeth = teeth(radius);
+    float rotationSpeedDegrees = (PI / 18);
+    float rotationSpeedRadians = 0.00304617419787;
+    //MOVE GEARS to starting postitions--------------------------------------------------------------------------------------------------------------------
+    gear1.setScale(scale, scale);
+    gear1.setOrigin(400, 400);
+    gear2.setOrigin(400, 400);
+    gear1.setPosition(gearX - g1radius, gearY);
+    gear2.rotate(-28 * (PI / 18));
     //create LINES-----------------------------------------------------------------------------------------------------------------------------------------
     sf::Vertex gear2gear[] =
     {
@@ -44,30 +59,16 @@ int main() {
     float dotX;
     float dotY;
     float k;
-    float t = 3625 * -0.00304617419787;;
+    float t = 3625 * -rotationSpeedRadians;
     float n = 1;
     float d;
     //DOTS setup-------------------------------------------------------------------------------------------------------------------------------------------
-    drawing.setOrigin(950 - (375 * .5), 500);
-    drawing.setPosition(950 - (375 * .5), 500);
+    drawing.setOrigin(gearX - radius, gearY);
+    drawing.setPosition(gearX - radius, gearY);
     //LINE VARIABLES---------------------------------------------------------------------------------------------------------------------------------------
     float lineX = 0;
     float lineY = 0;
-    float lineAngle = -0.00304617419787;
-    //GEAR VARIABLES---------------------------------------------------------------------------------------------------------------------------------------
-    float gearX = 950;
-    float gearY = 500;
-    float scale = .5;
-    float radius = 375 * scale;
-    float g1radius = 375 * .5;
-    float g2Teeth = teeth(radius);
-    float rotationSpeed = (PI / 18);
-    //MOVE GEARS to starting postitions--------------------------------------------------------------------------------------------------------------------
-    gear1.setScale(scale, scale);
-    gear1.setOrigin(400, 400);
-    gear2.setOrigin(400, 400);
-    gear1.setPosition(gearX - g1radius, gearY);
-    gear2.rotate(-28 * (PI / 18));
+    float lineAngle = -rotationSpeedDegrees;
     while (window.isOpen())
     {
         // Process events----------------------------------------------------------------------------------------------------------------------------------
@@ -80,11 +81,11 @@ int main() {
         }
         //UPDATE section-----------------------------------------------------------------------------------------------------------------------------------
         //GEAR UPDATE--------------------------------------------------------------------------------------------------------------------------------------
-        scale = .5 / 3;
+        scale = .5  / 3;
         radius = 375 * scale;
         g2Teeth = teeth(radius);
-        gear1.rotate(rotationSpeed/(36/g2Teeth));
-        gear2.rotate(-rotationSpeed);
+        gear1.rotate(rotationSpeedDegrees/(36/g2Teeth));
+        gear2.rotate(-rotationSpeedDegrees);
         gear2.setPosition(gearX + radius + ((radius * 2) / 40), gearY);
         gear2.setScale(scale, scale);
         //LINE UPDATE--------------------------------------------------------------------------------------------------------------------------------------
@@ -111,9 +112,9 @@ int main() {
         window.draw(drawing);
         // Update the window-------------------------------------------------------------------------------------------------------------------------------
         window.display();
-        lineAngle += -0.00304617419787;
-        t += -(0.00304617419787 / 2.99);
-        drawing.rotate(rotationSpeed / (36 / g2Teeth));
+        lineAngle += -rotationSpeedRadians;
+        t += -(rotationSpeedRadians / 2.99);
+        drawing.rotate(rotationSpeedDegrees / (36 / g2Teeth));
     }
 
 }
