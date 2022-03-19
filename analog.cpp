@@ -15,8 +15,8 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(1900, 1000), "SFML window");
     window.setFramerateLimit(144);
     //OFFSCREEN windows setup------------------------------------------------------------------------------------------------------------------------------
-    sf::RenderTexture offscreen;
-    offscreen.create(800, 800);
+    sf::RenderTexture gearTexture;
+    gearTexture.create(800, 800);
     sf::RenderTexture renderDots;
     renderDots.create(1900, 1000);
     //GEAR VECTOR setup------------------------------------------------------------------------------------------------------------------------------------
@@ -24,20 +24,21 @@ int main() {
     std::vector<sf::CircleShape>::iterator gIter;
     //draw GEARS TO OFFSCREEN window-----------------------------------------------------------------------------------------------------------------------
     for (gIter = Gears.begin(); gIter != Gears.end(); ++gIter) {
-        offscreen.draw(*gIter);
+        gearTexture.draw(*gIter);
     }
-    offscreen.display();
+    gearTexture.display();
     //create GEAR TEXTURES---------------------------------------------------------------------------------------------------------------------------------
-    sf::Sprite gear1(offscreen.getTexture());
-    sf::Sprite gear2(offscreen.getTexture());
+    sf::Sprite gear1(gearTexture.getTexture());
+    sf::Sprite gear2(gearTexture.getTexture());
     sf::Texture dots(renderDots.getTexture());
     sf::Sprite drawing(dots);
+    drawing.scale(1, 1);
     //GEAR VARIABLES---------------------------------------------------------------------------------------------------------------------------------------
     float gearX = 950;
     float gearY = 500;
     float scale = .5;
     float radius = 375 * scale;
-    float g1radius = 375 * .5;
+    float g1radius = radius;
     float g2Teeth = teeth(radius);
     float rotationSpeedDegrees = (PI / 18);
     float rotationSpeedRadians = 0.00304617419787;
@@ -50,8 +51,19 @@ int main() {
     //create LINES-----------------------------------------------------------------------------------------------------------------------------------------
     sf::Vertex gear2gear[] =
     {
-        sf::Vertex(sf::Vector2f(750, 500), sf::Color::Blue),
-        sf::Vertex(sf::Vector2f(1150, 500), sf::Color::Blue)
+        sf::Vertex(sf::Vector2f(0, 0), sf::Color::Blue),
+        sf::Vertex(sf::Vector2f(0, 0), sf::Color::Blue)
+    };
+    sf::Vertex xAxis[] =
+    {
+        sf::Vertex(sf::Vector2f(0, 500), sf::Color::Red),
+        sf::Vertex(sf::Vector2f(1900, 500), sf::Color::Red)
+
+    };
+    sf::Vertex yAxis[] =
+    {
+        sf::Vertex(sf::Vector2f(gearX - g1radius, 0), sf::Color::Green),
+        sf::Vertex(sf::Vector2f(gearX - g1radius, 1000), sf::Color::Green)
     };
     //create DOTS------------------------------------------------------------------------------------------------------------------------------------------
     sf::CircleShape dot(5);
@@ -68,7 +80,12 @@ int main() {
     //LINE VARIABLES---------------------------------------------------------------------------------------------------------------------------------------
     float lineX = 0;
     float lineY = 0;
-    float lineAngle = -rotationSpeedDegrees;
+    float lineAngle = 0;
+    //create TRANSFORMS------------------------------------------------------------------------------------------------------------------------------------
+    sf::Transform transform;
+    //create POINTS----------------------------------------------------------------------------------------------------------------------------------------
+    sf::Vector2f point;
+    //GAME LOOP--------------------------------------------------------------------------------------------------------------------------------------------
     while (window.isOpen())
     {
         // Process events----------------------------------------------------------------------------------------------------------------------------------
@@ -81,7 +98,7 @@ int main() {
         }
         //UPDATE section-----------------------------------------------------------------------------------------------------------------------------------
         //GEAR UPDATE--------------------------------------------------------------------------------------------------------------------------------------
-        scale = .5  / 3;
+        scale = .5;
         radius = 375 * scale;
         g2Teeth = teeth(radius);
         gear1.rotate(rotationSpeedDegrees/(36/g2Teeth));
@@ -95,13 +112,13 @@ int main() {
         gear2gear[0].position = sf::Vector2f(gearX - g1radius, lineY + 500);
         gear2gear[1].position = sf::Vector2f(lineX + (gearX + radius + ((radius * 2) / 40)), lineY + 500);
         //DOT UPDATE---------------------------------------------------------------------------------------------------------------------------------------
-        //TODO: Start drawing dots in the center, make line and dots draw at the same speed.
-        d = scale * 2;
-        k = n / d;
-        dotX = (150) * cos(k * t) * cos(t);
-        dotY = (150) * cos(k * t) * sin(t);
-        dot.setPosition(dotX + (gearX - g1radius), dotY + 500);
+        //TODO: translate y position of line end to x position on rotated plane
+        transform = (gear1.getInverseTransform());
+        point = transform.transformPoint(gear2gear[0].position);
+        dot.setPosition(point);
         renderDots.draw(dot);
+        renderDots.draw(xAxis, 2, sf::LinesStrip);
+        renderDots.draw(yAxis, 2, sf::LinesStrip);
         renderDots.display();
         dots.update(renderDots.getTexture());
         //RENDER section-----------------------------------------------------------------------------------------------------------------------------------
@@ -113,7 +130,6 @@ int main() {
         // Update the window-------------------------------------------------------------------------------------------------------------------------------
         window.display();
         lineAngle += -rotationSpeedRadians;
-        t += -(rotationSpeedRadians / 2.99);
         drawing.rotate(rotationSpeedDegrees / (36 / g2Teeth));
     }
 
