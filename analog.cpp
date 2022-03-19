@@ -32,7 +32,7 @@ int main() {
     sf::Sprite gear2(gearTexture.getTexture());
     sf::Texture dots(renderDots.getTexture());
     sf::Sprite drawing(dots);
-    drawing.scale(1, 1);
+    drawing.scale(.5, .5);
     //GEAR VARIABLES---------------------------------------------------------------------------------------------------------------------------------------
     float gearX = 950;
     float gearY = 500;
@@ -67,13 +67,6 @@ int main() {
     };
     //create DOTS------------------------------------------------------------------------------------------------------------------------------------------
     sf::CircleShape dot(5);
-    //DOTS variables---------------------------------------------------------------------------------------------------------------------------------------
-    float dotX;
-    float dotY;
-    float k;
-    float t = 3625 * -rotationSpeedRadians;
-    float n = 1;
-    float d;
     //DOTS setup-------------------------------------------------------------------------------------------------------------------------------------------
     drawing.setOrigin(gearX - radius, gearY);
     drawing.setPosition(gearX - radius, gearY);
@@ -98,7 +91,7 @@ int main() {
         }
         //UPDATE section-----------------------------------------------------------------------------------------------------------------------------------
         //GEAR UPDATE--------------------------------------------------------------------------------------------------------------------------------------
-        scale = .5;
+        scale = .5 * 16;
         radius = 375 * scale;
         g2Teeth = teeth(radius);
         gear1.rotate(rotationSpeedDegrees/(36/g2Teeth));
@@ -106,26 +99,25 @@ int main() {
         gear2.setPosition(gearX + radius + ((radius * 2) / 40), gearY);
         gear2.setScale(scale, scale);
         //LINE UPDATE--------------------------------------------------------------------------------------------------------------------------------------
-        //add point rotation for gear 2, use its Y value to draw dots on gear 1.
         lineX = (150) * cos(lineAngle);
         lineY = (150) * sin(lineAngle);
         gear2gear[0].position = sf::Vector2f(gearX - g1radius, lineY + 500);
         gear2gear[1].position = sf::Vector2f(lineX + (gearX + radius + ((radius * 2) / 40)), lineY + 500);
         //DOT UPDATE---------------------------------------------------------------------------------------------------------------------------------------
-        //TODO: translate y position of line end to x position on rotated plane
+        //TODO: translate rhodonea to center of gear
         transform = (gear1.getInverseTransform());
         point = transform.transformPoint(gear2gear[0].position);
-        dot.setPosition(point);
+        dot.setPosition(point.x + 357, point.y + 95); //rhodonea translate here
         renderDots.draw(dot);
-        renderDots.draw(xAxis, 2, sf::LinesStrip);
-        renderDots.draw(yAxis, 2, sf::LinesStrip);
+        //renderDots.draw(xAxis, 2, sf::LineStrip);
+        //renderDots.draw(yAxis, 2, sf::LineStrip);
         renderDots.display();
         dots.update(renderDots.getTexture());
         //RENDER section-----------------------------------------------------------------------------------------------------------------------------------
         window.clear();
         window.draw(gear2);
         window.draw(gear1);
-        window.draw(gear2gear, 2, sf::LinesStrip);
+        window.draw(gear2gear, 2, sf::LineStrip);
         window.draw(drawing);
         // Update the window-------------------------------------------------------------------------------------------------------------------------------
         window.display();
