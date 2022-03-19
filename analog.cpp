@@ -12,72 +12,72 @@ float teeth(float radius);
 
 int main() {
     //RENDER window setup----------------------------------------------------------------------------------------------------------------------------------
-    sf::RenderWindow window(sf::VideoMode(1900, 1000), "SFML window");
-    window.setFramerateLimit(144);
+    sf::RenderWindow window(sf::VideoMode(1900, 1000), "SFML window");                                                                                   //
+    window.setFramerateLimit(144);                                                                                                                       //
     //OFFSCREEN windows setup------------------------------------------------------------------------------------------------------------------------------
-    sf::RenderTexture gearTexture;
-    gearTexture.create(800, 800);
-    sf::RenderTexture renderDots;
-    renderDots.create(1900, 1000);
+    sf::RenderTexture gearTexture;                                                                                                                       //
+    gearTexture.create(800, 800);                                                                                                                        //
+    sf::RenderTexture renderDots;                                                                                                                        //
+    renderDots.create(1900, 1000);                                                                                                                       //
     //GEAR VECTOR setup------------------------------------------------------------------------------------------------------------------------------------
-    std::vector<sf::CircleShape> Gears = create_gear();
-    std::vector<sf::CircleShape>::iterator gIter;
+    std::vector<sf::CircleShape> Gears = create_gear();                                                                                                  //
+    std::vector<sf::CircleShape>::iterator gIter;                                                                                                        //
     //draw GEARS TO OFFSCREEN window-----------------------------------------------------------------------------------------------------------------------
-    for (gIter = Gears.begin(); gIter != Gears.end(); ++gIter) {
-        gearTexture.draw(*gIter);
-    }
-    gearTexture.display();
+    for (gIter = Gears.begin(); gIter != Gears.end(); ++gIter) {                                                                                         //
+        gearTexture.draw(*gIter);                                                                                                                        //
+    }                                                                                                                                                    //
+    gearTexture.display();                                                                                                                               //
     //create GEAR TEXTURES---------------------------------------------------------------------------------------------------------------------------------
-    sf::Sprite gear1(gearTexture.getTexture());
-    sf::Sprite gear2(gearTexture.getTexture());
-    sf::Texture dots(renderDots.getTexture());
-    sf::Sprite drawing(dots);
-    drawing.scale(.5, .5);
+    sf::Sprite gear1(gearTexture.getTexture());                                                                                                          //
+    sf::Sprite gear2(gearTexture.getTexture());                                                                                                          //
+    sf::Texture dots(renderDots.getTexture());                                                                                                           //
+    sf::Sprite drawing(dots);                                                                                                                            //
+    drawing.setScale(.5, .5);                                                                                                                            //
     //GEAR VARIABLES---------------------------------------------------------------------------------------------------------------------------------------
-    float gearX = 950;
-    float gearY = 500;
-    float scale = .5;
-    float radius = 375 * scale;
-    float g1radius = radius;
-    float g2Teeth = teeth(radius);
-    float rotationSpeedDegrees = (PI / 18);
-    float rotationSpeedRadians = 0.00304617419787;
+    float multiplyOffset = 0;                                                                                                                            //
+    float g1Multiplier = 2;                                                                                                                              //
+    float g2Multiplier = 1;                                                                                                                              //
+    float g1scale = .5;                                                                                                                                  //
+    float g2scale = .5;                                                                                                                                  //
+    float centerX;                                                                                                                                       //
+    float centerY = 500;                                                                                                                                 //
+    float g2radius;                                                                                                                                      //
+    float g1radius;                                                                                                                                      //
+    float g1Teeth;                                                                                                                                       //
+    float g2Teeth;                                                                                                                                       //
+    float rotationSpeedDegrees = (PI / 18);                                                                                                              //
+    float rotationSpeedRadians = 0.00304617419787;                                                                                                       //
     //MOVE GEARS to starting postitions--------------------------------------------------------------------------------------------------------------------
-    gear1.setScale(scale, scale);
-    gear1.setOrigin(400, 400);
-    gear2.setOrigin(400, 400);
-    gear1.setPosition(gearX - g1radius, gearY);
-    gear2.rotate(-28 * (PI / 18));
+    gear1.setOrigin(400, 400);                                                                                                                           //
+    gear2.setOrigin(400, 400);                                                                                                                           //
+    gear2.rotate(-28 * (PI / 18));                                                                                                                       //
     //create LINES-----------------------------------------------------------------------------------------------------------------------------------------
-    sf::Vertex gear2gear[] =
-    {
-        sf::Vertex(sf::Vector2f(0, 0), sf::Color::Blue),
-        sf::Vertex(sf::Vector2f(0, 0), sf::Color::Blue)
-    };
-    sf::Vertex xAxis[] =
-    {
-        sf::Vertex(sf::Vector2f(0, 500), sf::Color::Red),
-        sf::Vertex(sf::Vector2f(1900, 500), sf::Color::Red)
-
-    };
-    sf::Vertex yAxis[] =
-    {
-        sf::Vertex(sf::Vector2f(gearX - g1radius, 0), sf::Color::Green),
-        sf::Vertex(sf::Vector2f(gearX - g1radius, 1000), sf::Color::Green)
-    };
+    sf::Vertex gear2gear[] =                                                                                                                             //
+    {                                                                                                                                                    //
+        sf::Vertex(sf::Vector2f(0, 0), sf::Color::Blue),                                                                                                 //
+        sf::Vertex(sf::Vector2f(0, 0), sf::Color::Blue)                                                                                                  //
+    };                                                                                                                                                   //
+    sf::Vertex xAxis[] =                                                                                                                                 //
+    {                                                                                                                                                    //
+        sf::Vertex(sf::Vector2f(0, 500), sf::Color::Red),                                                                                                //
+        sf::Vertex(sf::Vector2f(1900, 500), sf::Color::Red)                                                                                              //
+                                                                                                                                                         //
+    };                                                                                                                                                   //
+    sf::Vertex yAxis[] =                                                                                                                                 //
+    {                                                                                                                                                    //
+        sf::Vertex(sf::Vector2f(0, 0), sf::Color::Green),                                                                                                //
+        sf::Vertex(sf::Vector2f(0, 0), sf::Color::Green)                                                                                                 //
+    };                                                                                                                                                   //
     //create DOTS------------------------------------------------------------------------------------------------------------------------------------------
-    sf::CircleShape dot(5);
-    //DOTS setup-------------------------------------------------------------------------------------------------------------------------------------------
-    drawing.setOrigin(gearX - radius, gearY);
-    drawing.setPosition(gearX - radius, gearY);
+    sf::CircleShape dot(5);                                                                                                                              //
     //LINE VARIABLES---------------------------------------------------------------------------------------------------------------------------------------
-    float lineX = 0;
-    float lineY = 0;
-    float lineAngle = 0;
-    //create TRANSFORMS------------------------------------------------------------------------------------------------------------------------------------
-    sf::Transform transform;
-    //create POINTS----------------------------------------------------------------------------------------------------------------------------------------
-    sf::Vector2f point;
+    float lineX = 0;                                                                                                                                     //
+    float lineY = 0;                                                                                                                                     //
+    float lineAngle = 0;                                                                                                                                 //
+    //create TRANSFORMATION--------------------------------------------------------------------------------------------------------------------------------
+    sf::Transform transform;                                                                                                                             //
+    //create POINT-----------------------------------------------------------------------------------------------------------------------------------------
+    sf::Vector2f point;                                                                                                                                  //
     //GAME LOOP--------------------------------------------------------------------------------------------------------------------------------------------
     while (window.isOpen())
     {
@@ -90,27 +90,39 @@ int main() {
                 window.close();
         }
         //UPDATE section-----------------------------------------------------------------------------------------------------------------------------------
+        //SCALE update-------------------------------------------------------------------------------------------------------------------------------------
+        g1scale = .5 * g1Multiplier;
+        g2scale = .5 * g2Multiplier;
         //GEAR UPDATE--------------------------------------------------------------------------------------------------------------------------------------
-        scale = .5 * 16;
-        radius = 375 * scale;
-        g2Teeth = teeth(radius);
-        gear1.rotate(rotationSpeedDegrees/(36/g2Teeth));
+        g1radius = 375 * g1scale;
+        g2radius = 375 * g2scale;
+        centerX = 950 + g1radius;
+        g1Teeth = teeth(g1radius);
+        g2Teeth = teeth(g2radius);
+        gear1.rotate(rotationSpeedDegrees/(g1Teeth/g2Teeth));
         gear2.rotate(-rotationSpeedDegrees);
-        gear2.setPosition(gearX + radius + ((radius * 2) / 40), gearY);
-        gear2.setScale(scale, scale);
+        gear1.setPosition(centerX - g1radius, centerY);
+        gear2.setPosition(centerX + g2radius + ((g2radius * 2) / 40), centerY);
+        gear1.setScale(g1scale, g1scale);
+        gear2.setScale(g2scale, g2scale);
         //LINE UPDATE--------------------------------------------------------------------------------------------------------------------------------------
-        lineX = (150) * cos(lineAngle);
-        lineY = (150) * sin(lineAngle);
-        gear2gear[0].position = sf::Vector2f(gearX - g1radius, lineY + 500);
-        gear2gear[1].position = sf::Vector2f(lineX + (gearX + radius + ((radius * 2) / 40)), lineY + 500);
+        lineX = (g1radius - (g1radius * .10)) * cos(lineAngle);
+        lineY = (g1radius - (g1radius * .10)) * sin(lineAngle);
+        gear2gear[0].position = sf::Vector2f(centerX - g1radius, lineY + centerY);
+        gear2gear[1].position = sf::Vector2f(lineX + (centerX + g2radius + ((g2radius * 2) / 40)), lineY + centerY);
+        yAxis[0].position = sf::Vector2f(centerX - g1radius, 0);
+        yAxis[1].position = sf::Vector2f(centerX - g1radius, 1000);
         //DOT UPDATE---------------------------------------------------------------------------------------------------------------------------------------
-        //TODO: translate rhodonea to center of gear
-        transform = (gear1.getInverseTransform());
+        //TODO get ratio between gear 1 scale and rhodonea translate.
+        drawing.setScale(g1scale, g1scale);
+        drawing.setOrigin(centerX - g1radius, centerY);
+        drawing.setPosition(centerX - g1radius, centerY);
+        transform = gear1.getInverseTransform();
         point = transform.transformPoint(gear2gear[0].position);
-        dot.setPosition(point.x + 357, point.y + 95); //rhodonea translate here
+        dot.setPosition(point.x + (544.5), point.y + (95)); //rhodonea translate here
         renderDots.draw(dot);
-        //renderDots.draw(xAxis, 2, sf::LineStrip);
-        //renderDots.draw(yAxis, 2, sf::LineStrip);
+        /*renderDots.draw(xAxis, 2, sf::LineStrip);
+        renderDots.draw(yAxis, 2, sf::LineStrip);*/
         renderDots.display();
         dots.update(renderDots.getTexture());
         //RENDER section-----------------------------------------------------------------------------------------------------------------------------------
@@ -122,7 +134,7 @@ int main() {
         // Update the window-------------------------------------------------------------------------------------------------------------------------------
         window.display();
         lineAngle += -rotationSpeedRadians;
-        drawing.rotate(rotationSpeedDegrees / (36 / g2Teeth));
+        drawing.rotate(rotationSpeedDegrees / (g1Teeth / g2Teeth));
     }
 
 }
