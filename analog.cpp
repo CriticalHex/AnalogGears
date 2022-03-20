@@ -6,7 +6,7 @@
 
 using namespace std;
 
-enum DIRECTIONS { SUP, SDOWN, KUP, KDOWN };
+enum DIRECTIONS { ONEUP, ONEDOWN, TWOUP, TWODOWN };
 
 float PI = 3.14159265358979323;
 
@@ -19,7 +19,9 @@ int main() {
     int keyDelay = 0;
     //RENDER window setup----------------------------------------------------------------------------------------------------------------------------------
     sf::RenderWindow window(sf::VideoMode(1900, 1000), "Rhodonea Gears");                                                                                //
-    window.setFramerateLimit(144);                                                                                                                       //
+    int framerate = 144;                                                                                                                                 //
+    int frameTick = 0;                                                                                                                                   //
+    window.setFramerateLimit(framerate);                                                                                                                 //
     //OFFSCREEN windows setup------------------------------------------------------------------------------------------------------------------------------
     sf::RenderTexture gearTexture;                                                                                                                       //
     gearTexture.create(800, 800);                                                                                                                        //
@@ -96,7 +98,7 @@ int main() {
     //create POINT-----------------------------------------------------------------------------------------------------------------------------------------
     sf::Vector2f point;                                                                                                                                  //
     //TEXT setup-------------------------------------------------------------------------------------------------------------------------------------------
-    string ratio = to_string(g1Multiplier) + " / " + to_string(g2Multiplier);
+    string ratio;
     sf::Font font;
     font.loadFromFile("arial.ttf");
     sf::Text text(ratio, font);
@@ -115,27 +117,43 @@ int main() {
                 window.close();
             //KEYBOARD INPUT 
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-                keys[SUP] = true;
+                keys[ONEUP] = true;
             }
-            else keys[SUP] = false;
+            else keys[ONEUP] = false;
 
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-                keys[SDOWN] = true;
+                keys[ONEDOWN] = true;
             }
-            else keys[SDOWN] = false;
+            else keys[ONEDOWN] = false;
 
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-                keys[KUP] = true;
+                keys[TWOUP] = true;
             }
-            else keys[KUP] = false;
+            else keys[TWOUP] = false;
 
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-                keys[KDOWN] = true;
+                keys[TWODOWN] = true;
             }
-            else keys[KDOWN] = false;
+            else keys[TWODOWN] = false;
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+                switch (frameTick % 3) {
+                case 0:
+                    framerate = 144;
+                    break;
+                case 1:
+                    framerate = 0;
+                    break;
+                case 2:
+                    framerate = 10;
+                    break;
+                }
+                frameTick++;
+            }
+            else keys[FRAMECHANGE] = false;
         }
 
-        if (keys[SUP] == true && keyDelay % 10 == 0) {
+        if (keys[ONEUP] == true && keyDelay % 10 == 0) {
             if (g2Multiplier <= 1) {
                 g2Multiplier *= 2;
                 renderDots.clear(sf::Color(255,255,255,0));
@@ -145,7 +163,7 @@ int main() {
                 renderDots.clear(sf::Color(255,255,255,0));
                 }
         }
-        else if (keys[SDOWN] == true && keyDelay % 10 == 0) {
+        else if (keys[ONEDOWN] == true && keyDelay % 10 == 0) {
             if (g2Multiplier <= 1) {
                 g2Multiplier /= 2;
                 renderDots.clear(sf::Color(255,255,255,0));
@@ -155,7 +173,7 @@ int main() {
                 renderDots.clear(sf::Color(255,255,255,0));
             }
         }
-        if (keys[KUP] == true && keyDelay % 10 == 0) {
+        if (keys[TWOUP] == true && keyDelay % 10 == 0) {
             if (g1Multiplier <= 1) {
                 g1Multiplier *= 2;
                 renderDots.clear(sf::Color(255,255,255,0));
@@ -165,7 +183,7 @@ int main() {
                 renderDots.clear(sf::Color(255,255,255,0));
             }
         }
-        else if (keys[KDOWN] == true && keyDelay % 10 == 0) {
+        else if (keys[TWODOWN] == true && keyDelay % 10 == 0) {
             if (g1Multiplier <= 1) {
                 g1Multiplier /= 2;
                 renderDots.clear(sf::Color(255,255,255,0));
@@ -216,7 +234,7 @@ int main() {
         renderDots.display();
         dots.update(renderDots.getTexture());
         //TEXT UPDATE--------------------------------------------------------------------------------------------------------------------------------------
-        ratio = to_string(g1Multiplier) + " : " + to_string(g2Multiplier);
+        ratio = to_string(g1Multiplier) + " : " + to_string(g2Multiplier) + "  --  " + to_string(framerate);
         text.setString(ratio);
         //RENDER section-----------------------------------------------------------------------------------------------------------------------------------
         window.clear();
@@ -229,6 +247,7 @@ int main() {
         window.draw(text);
         // Update the window-------------------------------------------------------------------------------------------------------------------------------
         window.display();
+        window.setFramerateLimit(framerate);
         lineAngle += -rotationSpeedRadians;
         drawing.rotate(rotationSpeedDegrees / (g1Teeth / g2Teeth));
         keyDelay++;
