@@ -1,3 +1,4 @@
+//Left and Right arrows controls Right Gear, Up and Down arrows control the Left Gear.
 #include<iostream>
 #include<SFML\Graphics.hpp>
 #include<math.h>
@@ -5,14 +6,19 @@
 
 using namespace std;
 
+enum DIRECTIONS { SUP, SDOWN, KUP, KDOWN };
+
 float PI = 3.14159265358979323;
 
 std::vector<sf::CircleShape> create_gear();
 float teeth(float radius);
 
 int main() {
+    //INPUT setup------------------------------------------------------------------------------------------------------------------------------------------
+    bool keys[] = { false, false, false, false };
+    int keyDelay = 0;
     //RENDER window setup----------------------------------------------------------------------------------------------------------------------------------
-    sf::RenderWindow window(sf::VideoMode(1900, 1000), "SFML window");                                                                                   //
+    sf::RenderWindow window(sf::VideoMode(1900, 1000), "Rhodonea Gears");                                                                                //
     window.setFramerateLimit(144);                                                                                                                       //
     //OFFSCREEN windows setup------------------------------------------------------------------------------------------------------------------------------
     sf::RenderTexture gearTexture;                                                                                                                       //
@@ -32,13 +38,13 @@ int main() {
     sf::Sprite gear2(gearTexture.getTexture());                                                                                                          //
     sf::Texture dots(renderDots.getTexture());                                                                                                           //
     sf::Sprite drawing(dots);                                                                                                                            //
-    drawing.setScale(.5, .5);                                                                                                                            //
+    drawing.setScale(.125, .125);                                                                                                                        //
     //GEAR VARIABLES---------------------------------------------------------------------------------------------------------------------------------------
     float multiplyOffset = 0;                                                                                                                            //
-    float g1Multiplier = 2;                                                                                                                              //
+    float g1Multiplier = 1;                                                                                                                              //
     float g2Multiplier = 1;                                                                                                                              //
-    float g1scale = .5;                                                                                                                                  //
-    float g2scale = .5;                                                                                                                                  //
+    float g1scale = .125;                                                                                                                                //
+    float g2scale = .125;                                                                                                                                //
     float centerX;                                                                                                                                       //
     float centerY = 500;                                                                                                                                 //
     float g2radius;                                                                                                                                      //
@@ -52,7 +58,17 @@ int main() {
     gear2.setOrigin(400, 400);                                                                                                                           //
     gear2.rotate(-28 * (PI / 18));                                                                                                                       //
     //create LINES-----------------------------------------------------------------------------------------------------------------------------------------
-    sf::Vertex gear2gear[] =                                                                                                                             //
+    sf::Vertex GearToGear[] =                                                                                                                            //
+    {                                                                                                                                                    //
+        sf::Vertex(sf::Vector2f(0, 0), sf::Color::Blue),                                                                                                 //
+        sf::Vertex(sf::Vector2f(0, 0), sf::Color::Blue)                                                                                                  //
+    };                                                                                                                                                   //
+    sf::Vertex GearToLine[] =                                                                                                                            //
+    {                                                                                                                                                    //
+        sf::Vertex(sf::Vector2f(0, 0), sf::Color::Blue),                                                                                                 //
+        sf::Vertex(sf::Vector2f(0, 0), sf::Color::Blue)                                                                                                  //
+    };                                                                                                                                                   //
+    sf::Vertex Gear1YAxis[] =                                                                                                                            //
     {                                                                                                                                                    //
         sf::Vertex(sf::Vector2f(0, 0), sf::Color::Blue),                                                                                                 //
         sf::Vertex(sf::Vector2f(0, 0), sf::Color::Blue)                                                                                                  //
@@ -70,6 +86,7 @@ int main() {
     };                                                                                                                                                   //
     //create DOTS------------------------------------------------------------------------------------------------------------------------------------------
     sf::CircleShape dot(5);                                                                                                                              //
+    dot.setFillColor(sf::Color::Red);                                                                                                                    //
     //LINE VARIABLES---------------------------------------------------------------------------------------------------------------------------------------
     float lineX = 0;                                                                                                                                     //
     float lineY = 0;                                                                                                                                     //
@@ -78,6 +95,14 @@ int main() {
     sf::Transform transform;                                                                                                                             //
     //create POINT-----------------------------------------------------------------------------------------------------------------------------------------
     sf::Vector2f point;                                                                                                                                  //
+    //TEXT setup-------------------------------------------------------------------------------------------------------------------------------------------
+    string ratio = to_string(g1Multiplier) + " / " + to_string(g2Multiplier);
+    sf::Font font;
+    font.loadFromFile("arial.ttf");
+    sf::Text text(ratio, font);
+    text.setCharacterSize(30);
+    text.setStyle(sf::Text::Bold);
+    text.setFillColor(sf::Color::Blue);
     //GAME LOOP--------------------------------------------------------------------------------------------------------------------------------------------
     while (window.isOpen())
     {
@@ -88,11 +113,73 @@ int main() {
             // Close window: exit--------------------------------------------------------------------------------------------------------------------------
             if (event.type == sf::Event::Closed)
                 window.close();
+            //KEYBOARD INPUT 
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+                keys[SUP] = true;
+            }
+            else keys[SUP] = false;
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+                keys[SDOWN] = true;
+            }
+            else keys[SDOWN] = false;
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+                keys[KUP] = true;
+            }
+            else keys[KUP] = false;
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+                keys[KDOWN] = true;
+            }
+            else keys[KDOWN] = false;
         }
+
+        if (keys[SUP] == true && keyDelay % 10 == 0) {
+            if (g2Multiplier <= 1) {
+                g2Multiplier *= 2;
+                renderDots.clear(sf::Color(255,255,255,0));
+            }
+            else {
+                g2Multiplier += 1;
+                renderDots.clear(sf::Color(255,255,255,0));
+                }
+        }
+        else if (keys[SDOWN] == true && keyDelay % 10 == 0) {
+            if (g2Multiplier <= 1) {
+                g2Multiplier /= 2;
+                renderDots.clear(sf::Color(255,255,255,0));
+            }
+            else {
+                g2Multiplier -= 1;
+                renderDots.clear(sf::Color(255,255,255,0));
+            }
+        }
+        if (keys[KUP] == true && keyDelay % 10 == 0) {
+            if (g1Multiplier <= 1) {
+                g1Multiplier *= 2;
+                renderDots.clear(sf::Color(255,255,255,0));
+            }
+            else {
+                g1Multiplier += 1;
+                renderDots.clear(sf::Color(255,255,255,0));
+            }
+        }
+        else if (keys[KDOWN] == true && keyDelay % 10 == 0) {
+            if (g1Multiplier <= 1) {
+                g1Multiplier /= 2;
+                renderDots.clear(sf::Color(255,255,255,0));
+            }
+            else {
+                g1Multiplier -= 1;
+                renderDots.clear(sf::Color(255,255,255,0));
+                }
+        }
+
         //UPDATE section-----------------------------------------------------------------------------------------------------------------------------------
         //SCALE update-------------------------------------------------------------------------------------------------------------------------------------
-        g1scale = .5 * g1Multiplier;
-        g2scale = .5 * g2Multiplier;
+        g1scale = .125 * g1Multiplier;
+        g2scale = .125 * g2Multiplier;
         //GEAR UPDATE--------------------------------------------------------------------------------------------------------------------------------------
         g1radius = 375 * g1scale;
         g2radius = 375 * g2scale;
@@ -108,33 +195,43 @@ int main() {
         //LINE UPDATE--------------------------------------------------------------------------------------------------------------------------------------
         lineX = (g1radius - (g1radius * .10)) * cos(lineAngle);
         lineY = (g1radius - (g1radius * .10)) * sin(lineAngle);
-        gear2gear[0].position = sf::Vector2f(centerX - g1radius, lineY + centerY);
-        gear2gear[1].position = sf::Vector2f(lineX + (centerX + g2radius + ((g2radius * 2) / 40)), lineY + centerY);
+        GearToGear[0].position = sf::Vector2f(centerX - g1radius, lineY + centerY);
+        GearToGear[1].position = sf::Vector2f(lineX + (centerX + g2radius + ((g2radius * 2) / 40)), lineY + centerY);
         yAxis[0].position = sf::Vector2f(centerX - g1radius, 0);
         yAxis[1].position = sf::Vector2f(centerX - g1radius, 1000);
+        GearToLine[0].position = gear2.getPosition();
+        GearToLine[1].position = GearToGear[1].position;
+        Gear1YAxis[0].position = sf::Vector2f(gear1.getPosition().x, gear1.getPosition().y - g1radius);
+        Gear1YAxis[1].position = sf::Vector2f(gear1.getPosition().x, gear1.getPosition().y + g1radius);
         //DOT UPDATE---------------------------------------------------------------------------------------------------------------------------------------
-        //TODO get ratio between gear 1 scale and rhodonea translate.
         drawing.setScale(g1scale, g1scale);
         drawing.setOrigin(centerX - g1radius, centerY);
         drawing.setPosition(centerX - g1radius, centerY);
         transform = gear1.getInverseTransform();
-        point = transform.transformPoint(gear2gear[0].position);
-        dot.setPosition(point.x + (544.5), point.y + (95)); //rhodonea translate here
+        point = transform.transformPoint(GearToGear[0].position);
+        dot.setPosition(point.x + (544.5), point.y + (95));
         renderDots.draw(dot);
         /*renderDots.draw(xAxis, 2, sf::LineStrip);
         renderDots.draw(yAxis, 2, sf::LineStrip);*/
         renderDots.display();
         dots.update(renderDots.getTexture());
+        //TEXT UPDATE--------------------------------------------------------------------------------------------------------------------------------------
+        ratio = to_string(g1Multiplier) + " : " + to_string(g2Multiplier);
+        text.setString(ratio);
         //RENDER section-----------------------------------------------------------------------------------------------------------------------------------
         window.clear();
         window.draw(gear2);
         window.draw(gear1);
-        window.draw(gear2gear, 2, sf::LineStrip);
+        window.draw(Gear1YAxis, 2, sf::LineStrip);
+        window.draw(GearToLine, 2, sf::LineStrip);
+        window.draw(GearToGear, 2, sf::LineStrip);
         window.draw(drawing);
+        window.draw(text);
         // Update the window-------------------------------------------------------------------------------------------------------------------------------
         window.display();
         lineAngle += -rotationSpeedRadians;
         drawing.rotate(rotationSpeedDegrees / (g1Teeth / g2Teeth));
+        keyDelay++;
     }
 
 }
