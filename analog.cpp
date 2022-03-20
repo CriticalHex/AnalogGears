@@ -1,4 +1,4 @@
-//Left and Right arrows controls Right Gear, Up and Down arrows control the Left Gear.
+//Left and Right arrows controls Right Gear, Up and Down arrows control the Left Gear, Space toggles Framerate.
 #include<iostream>
 #include<SFML\Graphics.hpp>
 #include<math.h>
@@ -150,7 +150,6 @@ int main() {
                 }
                 frameTick++;
             }
-            else keys[FRAMECHANGE] = false;
         }
 
         if (keys[ONEUP] == true && keyDelay % 10 == 0) {
