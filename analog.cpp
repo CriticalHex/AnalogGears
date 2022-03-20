@@ -18,15 +18,16 @@ int main() {
     bool keys[] = { false, false, false, false };
     int keyDelay = 0;
     //RENDER window setup----------------------------------------------------------------------------------------------------------------------------------
-    sf::RenderWindow window(sf::VideoMode(1900, 1000), "Rhodonea Gears");                                                                                //
+    sf::RenderWindow window(sf::VideoMode(1920, 1080), "Rhodonea Gears", sf::Style::Fullscreen);                                                                                //
     int framerate = 144;                                                                                                                                 //
     int frameTick = 0;                                                                                                                                   //
+    bool pause = false;                                                                                                                                      //
     window.setFramerateLimit(framerate);                                                                                                                 //
     //OFFSCREEN windows setup------------------------------------------------------------------------------------------------------------------------------
     sf::RenderTexture gearTexture;                                                                                                                       //
     gearTexture.create(800, 800);                                                                                                                        //
     sf::RenderTexture renderDots;                                                                                                                        //
-    renderDots.create(1900, 1000);                                                                                                                       //
+    renderDots.create(1920, 1080);                                                                                                                       //
     //GEAR VECTOR setup------------------------------------------------------------------------------------------------------------------------------------
     std::vector<sf::CircleShape> Gears = create_gear();                                                                                                  //
     std::vector<sf::CircleShape>::iterator gIter;                                                                                                        //
@@ -48,7 +49,7 @@ int main() {
     float g1scale = .125;                                                                                                                                //
     float g2scale = .125;                                                                                                                                //
     float centerX;                                                                                                                                       //
-    float centerY = 500;                                                                                                                                 //
+    float centerY = window.getSize().y / 2;                                                                                                              //
     float g2radius;                                                                                                                                      //
     float g1radius;                                                                                                                                      //
     float g1Teeth;                                                                                                                                       //
@@ -77,8 +78,8 @@ int main() {
     };                                                                                                                                                   //
     sf::Vertex xAxis[] =                                                                                                                                 //
     {                                                                                                                                                    //
-        sf::Vertex(sf::Vector2f(0, 500), sf::Color::Red),                                                                                                //
-        sf::Vertex(sf::Vector2f(1900, 500), sf::Color::Red)                                                                                              //
+        sf::Vertex(sf::Vector2f(0, window.getSize().y / 2), sf::Color::Red),                                                                                                //
+        sf::Vertex(sf::Vector2f(window.getSize().x, window.getSize().y / 2), sf::Color::Red)                                                                                              //
                                                                                                                                                          //
     };                                                                                                                                                   //
     sf::Vertex yAxis[] =                                                                                                                                 //
@@ -115,82 +116,79 @@ int main() {
             // Close window: exit--------------------------------------------------------------------------------------------------------------------------
             if (event.type == sf::Event::Closed)
                 window.close();
-            //KEYBOARD INPUT 
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-                keys[ONEUP] = true;
+        }
+        while (pause == true) {
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+                pause = false;
             }
-            else keys[ONEUP] = false;
-
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-                keys[ONEDOWN] = true;
-            }
-            else keys[ONEDOWN] = false;
-
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-                keys[TWOUP] = true;
-            }
-            else keys[TWOUP] = false;
-
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-                keys[TWODOWN] = true;
-            }
-            else keys[TWODOWN] = false;
-
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-                switch (frameTick % 3) {
-                case 0:
-                    framerate = 144;
-                    break;
-                case 1:
-                    framerate = 0;
-                    break;
-                case 2:
-                    framerate = 10;
-                    break;
-                }
-                frameTick++;
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
+                window.close();
+                return 0;
             }
         }
-
-        if (keys[ONEUP] == true && keyDelay % 10 == 0) {
+        //KEYBOARD INPUT 
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && keyDelay % 10 == 0) {
             if (g2Multiplier <= 1) {
                 g2Multiplier *= 2;
-                renderDots.clear(sf::Color(255,255,255,0));
+                renderDots.clear(sf::Color(255, 255, 255, 0));
             }
             else {
                 g2Multiplier += 1;
-                renderDots.clear(sf::Color(255,255,255,0));
-                }
+                renderDots.clear(sf::Color(255, 255, 255, 0));
+            }
         }
-        else if (keys[ONEDOWN] == true && keyDelay % 10 == 0) {
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && keyDelay % 10 == 0) {
             if (g2Multiplier <= 1) {
                 g2Multiplier /= 2;
-                renderDots.clear(sf::Color(255,255,255,0));
+                renderDots.clear(sf::Color(255, 255, 255, 0));
             }
             else {
                 g2Multiplier -= 1;
-                renderDots.clear(sf::Color(255,255,255,0));
+                renderDots.clear(sf::Color(255, 255, 255, 0));
             }
         }
-        if (keys[TWOUP] == true && keyDelay % 10 == 0) {
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && keyDelay % 10 == 0) {
             if (g1Multiplier <= 1) {
                 g1Multiplier *= 2;
-                renderDots.clear(sf::Color(255,255,255,0));
+                renderDots.clear(sf::Color(255, 255, 255, 0));
             }
             else {
                 g1Multiplier += 1;
-                renderDots.clear(sf::Color(255,255,255,0));
+                renderDots.clear(sf::Color(255, 255, 255, 0));
             }
         }
-        else if (keys[TWODOWN] == true && keyDelay % 10 == 0) {
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && keyDelay % 10 == 0) {
             if (g1Multiplier <= 1) {
                 g1Multiplier /= 2;
-                renderDots.clear(sf::Color(255,255,255,0));
+                renderDots.clear(sf::Color(255, 255, 255, 0));
             }
             else {
                 g1Multiplier -= 1;
-                renderDots.clear(sf::Color(255,255,255,0));
-                }
+                renderDots.clear(sf::Color(255, 255, 255, 0));
+            }
+        }
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && keyDelay % 10 == 0) {
+            switch (frameTick % 2) {
+            case 0:
+                framerate = 144;
+                break;
+            case 1:
+                framerate = 0;
+                break;
+            }
+            frameTick++;
+        }
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) {
+            pause = true;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
+            window.close();
+            return 0;
         }
 
         //UPDATE section-----------------------------------------------------------------------------------------------------------------------------------
@@ -200,7 +198,7 @@ int main() {
         //GEAR UPDATE--------------------------------------------------------------------------------------------------------------------------------------
         g1radius = 375 * g1scale;
         g2radius = 375 * g2scale;
-        centerX = 950 + g1radius;
+        centerX = (window.getSize().x / 2) + g1radius;
         g1Teeth = teeth(g1radius);
         g2Teeth = teeth(g2radius);
         gear1.rotate(rotationSpeedDegrees/(g1Teeth/g2Teeth));
@@ -215,7 +213,7 @@ int main() {
         GearToGear[0].position = sf::Vector2f(centerX - g1radius, lineY + centerY);
         GearToGear[1].position = sf::Vector2f(lineX + (centerX + g2radius + ((g2radius * 2) / 40)), lineY + centerY);
         yAxis[0].position = sf::Vector2f(centerX - g1radius, 0);
-        yAxis[1].position = sf::Vector2f(centerX - g1radius, 1000);
+        yAxis[1].position = sf::Vector2f(centerX - g1radius, window.getSize().y);
         GearToLine[0].position = gear2.getPosition();
         GearToLine[1].position = GearToGear[1].position;
         Gear1YAxis[0].position = sf::Vector2f(gear1.getPosition().x, gear1.getPosition().y - g1radius);
@@ -226,14 +224,14 @@ int main() {
         drawing.setPosition(centerX - g1radius, centerY);
         transform = gear1.getInverseTransform();
         point = transform.transformPoint(GearToGear[0].position);
-        dot.setPosition(point.x + (544.5), point.y + (95));
+        dot.setPosition(point.x + (555.8), point.y + (137.75));
         renderDots.draw(dot);
         /*renderDots.draw(xAxis, 2, sf::LineStrip);
         renderDots.draw(yAxis, 2, sf::LineStrip);*/
         renderDots.display();
         dots.update(renderDots.getTexture());
         //TEXT UPDATE--------------------------------------------------------------------------------------------------------------------------------------
-        ratio = to_string(g1Multiplier) + " : " + to_string(g2Multiplier) + "  --  " + to_string(framerate);
+        ratio = to_string(g1Multiplier) + " : " + to_string(g2Multiplier) + "  --  " + to_string(framerate) + "FPS (Paused: " + to_string(pause) +")";
         text.setString(ratio);
         //RENDER section-----------------------------------------------------------------------------------------------------------------------------------
         window.clear();
@@ -265,7 +263,7 @@ std::vector<sf::CircleShape> create_gear() {
         float xpos = 375 * cos(i) + (400 - (375 * .05));
         float ypos = 375 * sin(i) + (400 - (375 * .05));
         subGear.setPosition(xpos, ypos);
-        subGear.setFillColor(sf::Color(200, 200, 200));
+        subGear.setFillColor(sf::Color(50 + (i * 5.5555555555), 50 + (i * 5.5555555555), 50 + (i * 5.5555555555)));
         gears.push_back(subGear);
     }
     return gears;
